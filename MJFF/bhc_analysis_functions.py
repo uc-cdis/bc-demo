@@ -1160,10 +1160,10 @@ def get_followup_summary(project_id, node, label, visualization=1):
     else:
         var = label
        
-    query_text = """{ followup(first:0){
+    query_text = """{ followup(first:0, project_id: "%s"){
                         event_id
-                        %ss(first:0, project_id: "%s"){submitter_id %s} 
-                      }}""" % (node, project_id, var)
+                        %ss(first:0){submitter_id %s} 
+                      }}""" % (project_id, node, var)
     data = query_api(query_text) 
     
     # Extract data from query
@@ -1175,7 +1175,7 @@ def get_followup_summary(project_id, node, label, visualization=1):
             output[event_id].append(m[var])
     
     aggregated = []
-    for event in sorted(output.keys()):
+    for event in list(output.keys()):
         df = pd.Series(output[event])
         stats = df.describe().to_frame(event).T 
         stats.index = [event]
